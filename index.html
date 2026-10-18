@@ -86,6 +86,29 @@ nav{display:flex;align-items:center;justify-content:space-between;height:64px}
 .theme-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
   background:var(--card);color:var(--text);font-size:1.1rem;cursor:pointer;line-height:1}
 .theme-btn:hover{background:var(--orange-soft)}
+
+/* Cụm nút bên phải menu: đăng nhập + sáng/tối */
+.nav-right{display:flex;align-items:center;gap:10px}
+.login-btn{height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--orange);
+  background:transparent;color:var(--orange);font-weight:700;font-size:.9rem;cursor:pointer}
+.login-btn:hover{background:var(--orange-soft)}
+#user-name{font-weight:700;font-size:.9rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Hộp thoại đăng nhập: nền mờ phủ cả trang, hộp nằm giữa */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.5);padding:20px}
+.modal.open{display:flex}
+.modal-box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.modal-box h3{font-size:1.3rem;margin-bottom:4px}
+.modal-box label{display:block;font-size:.85rem;font-weight:600;margin:14px 0 6px}
+.modal-box input{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);
+  background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit}
+.modal-box input:focus{outline:2px solid var(--orange);border-color:transparent}
+.modal-box .cta{width:100%;border:0;cursor:pointer;margin-top:20px;text-align:center;font-size:1rem;font-family:inherit}
+.modal-hint{font-size:.82rem;color:var(--muted);margin-top:14px}
+.modal-err{color:#D9381E;font-size:.85rem;margin-top:10px;min-height:1.2em}
+.modal-close{float:right;background:none;border:0;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1}
 @media(max-width:720px){.links{display:none}} /* màn hình nhỏ: ẩn menu cho gọn */
 
 /* --- Phần đầu trang (hero) --- */
@@ -171,7 +194,11 @@ footer q{display:block;font-size:1.25rem;font-weight:700;color:var(--text);margi
         <a href="#hanh-trinh">Hành trình</a>
         <a href="#muc-tieu">Mục tiêu</a>
       </div>
-      <button class="theme-btn" id="theme-btn" type="button" aria-label="Chuyển chế độ sáng/tối">🌙</button>
+      <div class="nav-right">
+        <span id="user-name" hidden></span> <!-- tên người dùng, chỉ hiện khi đã đăng nhập -->
+        <button class="login-btn" id="login-btn" type="button">Đăng nhập</button>
+        <button class="theme-btn" id="theme-btn" type="button" aria-label="Chuyển chế độ sáng/tối">🌙</button>
+      </div>
     </nav>
   </div>
 </header>
@@ -349,6 +376,74 @@ footer q{display:block;font-size:1.25rem;font-weight:700;color:var(--text);margi
   <q>Mỗi ngày tiến một chút, rồi sẽ đi rất xa.</q>
   <p>© 2026 Nathan · Hành trình học AI</p>
 </footer>
+
+<!-- ============ HỘP THOẠI ĐĂNG NHẬP ============ -->
+<div class="modal" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <form class="modal-box" id="login-form">
+    <button class="modal-close" id="login-close" type="button" aria-label="Đóng">×</button>
+    <h3 id="login-title">Đăng nhập</h3>
+    <label for="login-user">Tên đăng nhập</label>
+    <input id="login-user" autocomplete="username" required>
+    <label for="login-pass">Mật khẩu</label>
+    <input id="login-pass" type="password" autocomplete="current-password" required>
+    <div class="modal-err" id="login-err" role="alert"></div>
+    <button class="cta" type="submit">Đăng nhập</button>
+    <p class="modal-hint">Bản thử nghiệm giao diện. Tài khoản mẫu: <b>nathan</b> / <b>123456</b></p>
+  </form>
+</div>
+
+<script>
+/* ĐĂNG NHẬP (bản thử): chạy hoàn toàn trên trình duyệt, KHÔNG an toàn thật.
+   Tài khoản mẫu nằm ngay trong code nên ai cũng xem được. Muốn đăng nhập thật cần có máy chủ. */
+var TAI_KHOAN = {user:'nathan', pass:'123456'};
+var loginBtn = document.getElementById('login-btn');
+var userName = document.getElementById('user-name');
+var modal = document.getElementById('login-modal');
+var loginErr = document.getElementById('login-err');
+
+function hienTrangThai(){
+  var u = null;
+  try{ u = localStorage.getItem('user'); }catch(e){}
+  userName.hidden = !u;
+  userName.textContent = u ? '👋 ' + u : '';
+  loginBtn.textContent = u ? 'Đăng xuất' : 'Đăng nhập';
+}
+function moHop(){
+  loginErr.textContent = '';
+  modal.classList.add('open');
+  document.getElementById('login-user').focus();
+}
+function dongHop(){ modal.classList.remove('open'); }
+
+loginBtn.addEventListener('click', function(){
+  var daLogin = false;
+  try{ daLogin = !!localStorage.getItem('user'); }catch(e){}
+  if(daLogin){
+    try{ localStorage.removeItem('user'); }catch(e){}
+    hienTrangThai();
+  }else{
+    moHop();
+  }
+});
+document.getElementById('login-close').addEventListener('click', dongHop);
+modal.addEventListener('click', function(e){ if(e.target === modal) dongHop(); }); /* bấm nền mờ để đóng */
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') dongHop(); });
+
+document.getElementById('login-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var u = document.getElementById('login-user').value.trim();
+  var p = document.getElementById('login-pass').value;
+  if(u.toLowerCase() === TAI_KHOAN.user && p === TAI_KHOAN.pass){
+    try{ localStorage.setItem('user', TAI_KHOAN.user); }catch(e){}
+    this.reset();
+    dongHop();
+    hienTrangThai();
+  }else{
+    loginErr.textContent = 'Sai tên đăng nhập hoặc mật khẩu.';
+  }
+});
+hienTrangThai();
+</script>
 
 <script>
 /* Bấm nút: đổi sáng↔tối, đổi biểu tượng và lưu lại cho lần sau */
