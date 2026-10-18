@@ -7,7 +7,6 @@ Trang web nhật ký học AI của Nathan: ghi lại từng bước đi từ **
 - **Vì sao học AI**: các thẻ động lực.
 - **Kỹ năng**: thanh tiến độ tự đánh giá.
 - **Dòng thời gian**: các mốc đã xong / đang học / sắp tới.
-- **Chế độ sáng/tối**: nút 🌙 / ☀️ ở góc phải menu, lưu lựa chọn cho lần sau.
 
 ## Cấu trúc
 
@@ -46,9 +45,11 @@ Sau khi thêm mốc, nhớ cập nhật 3 ô số liệu ở đầu trang (tìm 
 ## Cách thêm chức năng
 
 1. **Thêm thẻ / kỹ năng**: sao chép khối `div.card` (mục "Vì sao") hoặc `div.skill` (mục "Kỹ năng"). Với kỹ năng, đổi số % ở cả `<small>` lẫn `style="width:..."`.
-2. **Đổi màu cả trang**: sửa các biến màu ở `:root` trong thẻ `<style>`. Bộ màu chế độ tối nằm ở `:root[data-theme="dark"]`.
+2. **Đổi màu cả trang**: sửa các biến màu ở `:root` trong thẻ `<style>`.
 3. **Thêm một mục mới**: tạo `<section id="ten-muc">` mới trong `<main>`, rồi thêm liên kết `<a href="#ten-muc">` vào menu ở đầu trang.
-4. **Thêm chức năng JavaScript**: viết trong thẻ `<script>` ở cuối `index.html`, cạnh đoạn code nút sáng/tối.
+4. **Thêm chức năng JavaScript**: trang hiện chưa có JavaScript, nên thêm một thẻ `<script>` ngay trước `</body>` ở cuối `index.html`.
+
+> Chức năng chế độ sáng/tối đã từng được làm và lưu ở thẻ Git `ban-co-sang-toi`. Xem lại bằng `git checkout ban-co-sang-toi`.
 
 ## Quy trình làm việc với Git
 
