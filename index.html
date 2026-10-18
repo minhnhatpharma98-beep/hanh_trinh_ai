@@ -5,6 +5,16 @@
 <meta charset="UTF-8"> <!-- Cho phép hiển thị đúng chữ có dấu -->
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Giúp trang vừa màn hình điện thoại -->
 <title>Hành trình AI của Nathan</title> <!-- Tiêu đề hiện trên tab trình duyệt -->
+<script>
+/* Đặt giao diện ngay từ đầu (trước khi trang vẽ) để không bị nháy sáng→tối.
+   Ưu tiên lựa chọn đã lưu; chưa có thì theo cài đặt của hệ điều hành. */
+(function(){
+  var t;
+  try{ t = localStorage.getItem('theme'); }catch(e){}
+  if(!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 
 <style>
 /* =====================================================
@@ -24,6 +34,20 @@
   --shadow:0 10px 30px rgba(255,107,26,.12); /* đổ bóng nhẹ */
   --radius:22px;           /* độ bo góc */
 }
+
+/* --- Chế độ tối: ghi đè các biến màu khi <html> có data-theme="dark" --- */
+:root[data-theme="dark"]{
+  --orange:#FF8A3D;
+  --orange-2:#FFB066;
+  --orange-soft:#3A2518;
+  --bg:#17110C;
+  --card:#241A13;
+  --text:#F6E9DD;
+  --muted:#B9A594;
+  --line:#3D2D21;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+:root[data-theme="dark"] .blob{opacity:.18} /* vệt cam mờ hơn cho đỡ chói */
 
 /* --- Reset: xóa khoảng cách mặc định của trình duyệt --- */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -58,6 +82,10 @@ nav{display:flex;align-items:center;justify-content:space-between;height:64px}
 .links a{color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:600;
   padding:8px 12px;border-radius:999px}
 .links a:hover{background:var(--orange-soft);color:var(--orange)}
+/* Nút chuyển sáng/tối */
+.theme-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--text);font-size:1.1rem;cursor:pointer;line-height:1}
+.theme-btn:hover{background:var(--orange-soft)}
 @media(max-width:720px){.links{display:none}} /* màn hình nhỏ: ẩn menu cho gọn */
 
 /* --- Phần đầu trang (hero) --- */
@@ -143,6 +171,7 @@ footer q{display:block;font-size:1.25rem;font-weight:700;color:var(--text);margi
         <a href="#hanh-trinh">Hành trình</a>
         <a href="#muc-tieu">Mục tiêu</a>
       </div>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Chuyển chế độ sáng/tối">🌙</button>
     </nav>
   </div>
 </header>
@@ -321,5 +350,20 @@ footer q{display:block;font-size:1.25rem;font-weight:700;color:var(--text);margi
   <p>© 2026 Nathan · Hành trình học AI</p>
 </footer>
 
+<script>
+/* Bấm nút: đổi sáng↔tối, đổi biểu tượng và lưu lại cho lần sau */
+var btn = document.getElementById('theme-btn');
+function hienNut(){
+  var toi = document.documentElement.getAttribute('data-theme') === 'dark';
+  btn.textContent = toi ? '☀️' : '🌙'; /* đang tối → hiện mặt trời để bấm sang sáng */
+}
+btn.addEventListener('click', function(){
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('theme', t); }catch(e){}
+  hienNut();
+});
+hienNut();
+</script>
 </body>
 </html>
